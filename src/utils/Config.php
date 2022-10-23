@@ -350,6 +350,9 @@ class Config{
 	 * @param mixed  $value
 	 */
 	public function setNested($key, $value) : void{
+		if($this->type === Config::INI){
+			$key = preg_replace('/[?\-{}\-|\-&\-~\-!\-[\-(\-)\-^\-§\- ]/', '', $key);
+		}
 		$vars = explode(".", $key);
 		$base = array_shift($vars);
 
@@ -379,6 +382,9 @@ class Config{
 	 * @return mixed
 	 */
 	public function getNested($key, $default = null){
+		if($this->type === Config::INI){
+			$key = preg_replace('/[?\-{}\-|\-&\-~\-!\-[\-(\-)\-^\-§\- ]/', '', $key);
+		}
 		if(isset($this->nestedCache[$key])){
 			return $this->nestedCache[$key];
 		}
@@ -431,6 +437,9 @@ class Config{
 	 * @return bool|mixed
 	 */
 	public function get($k, $default = false){
+		if($this->type === Config::INI){
+			$k = preg_replace('/[?\-{}\-|\-&\-~\-!\-[\-(\-)\-^\-§\- ]/', '', $k);
+		}
 		return $this->config[$k] ?? $default;
 	}
 
@@ -439,6 +448,9 @@ class Config{
 	 * @param mixed  $v value to set key
 	 */
 	public function set($k, $v = true) : void{
+		if($this->type === Config::INI){
+			$k = preg_replace('/[?\-{}\-|\-&\-~\-!\-[\-(\-)\-^\-§\- ]/', '', $k);
+		}
 		$this->config[$k] = $v;
 		$this->changed = true;
 		foreach(Utils::stringifyKeys($this->nestedCache) as $nestedKey => $nvalue){
