@@ -7,6 +7,7 @@
    "require": {
       "php": "^8.0",
       "php-64bit": "*",
+      "ext-mongodb": "*",
       "ext-chunkutils2": "^0.3.1",
       "ext-crypto": "^0.3.1",
       "ext-ctype": "*",
@@ -33,6 +34,7 @@
       "composer-runtime-api": "^2.0",
       "adhocore/json-comment": "^1.1",
       "fgrosse/phpasn1": "^2.3",
+      "mongodb/mongodb": ">=1.13.1",
       "netresearch/jsonmapper": "^4.0",
       "pocketmine/bedrock-data": "~1.11.0+bedrock-1.19.30",
       "pocketmine/bedrock-protocol": "~13.0.0+bedrock-1.19.30",
