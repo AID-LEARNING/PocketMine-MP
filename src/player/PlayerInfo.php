@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
- */
+*/
 
 declare(strict_types=1);
 
@@ -31,18 +31,45 @@ use Ramsey\Uuid\UuidInterface;
  * Encapsulates data needed to create a player.
  */
 class PlayerInfo{
+
+	/** @var string */
+	private $username;
+	/** @var string */
+	private $deviceId;
+	/** @var UuidInterface */
+	private $uuid;
+	/** @var Skin */
+	private $skin;
+	/** @var string */
+	private $locale;
 	/**
-	 * @param mixed[] $extraData
-	 * @phpstan-param array<string, mixed> $extraData
+	 * @var array
+	 * @phpstan-var array<string, mixed>
 	 */
-	public function __construct(
-		private string $username,
-		private UuidInterface $uuid,
-		private Skin $skin,
-		private string $locale,
-		private array $extraData = []
-	){
+	private array $extraData;
+
+	/**
+	 * @param string        $username
+	 * @param string        $deviceId
+	 * @param UuidInterface $uuid
+	 * @param Skin          $skin
+	 * @param string        $locale
+	 * @param array         $extraData
+	 */
+	public function __construct(string $username, string $deviceId, UuidInterface $uuid, Skin $skin, string $locale, array $extraData = []){
 		$this->username = TextFormat::clean($username);
+		$this->deviceId = $deviceId;
+		$this->uuid = $uuid;
+		$this->skin = $skin;
+		$this->locale = $locale;
+		$this->extraData = $extraData;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getDeviceId() : string{
+		return $this->deviceId;
 	}
 
 	public function getUsername() : string{
@@ -59,6 +86,13 @@ class PlayerInfo{
 
 	public function getLocale() : string{
 		return $this->locale;
+	}
+
+	/**
+	 * @return string[]
+	 */
+	public function getLocaleArray() : array{
+		return explode("_",$this->locale);
 	}
 
 	/**

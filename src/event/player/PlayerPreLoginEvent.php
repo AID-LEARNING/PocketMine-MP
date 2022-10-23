@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
- */
+*/
 
 declare(strict_types=1);
 
@@ -25,6 +25,7 @@ namespace pocketmine\event\player;
 
 use pocketmine\event\Cancellable;
 use pocketmine\event\Event;
+use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\player\PlayerInfo;
 use function array_keys;
 use function count;
@@ -52,20 +53,10 @@ class PlayerPreLoginEvent extends Event implements Cancellable{
 		self::KICK_REASON_BANNED
 	];
 
-	/** @var bool */
-	protected $authRequired;
-
 	/** @var string[] reason const => associated message */
 	protected $kickReasons = [];
 
-	public function __construct(
-		private PlayerInfo $playerInfo,
-		private string $ip,
-		private int $port,
-		bool $authRequired
-	){
-		$this->authRequired = $authRequired;
-	}
+	public function __construct(private PlayerInfo $playerInfo, private NetworkSession $networkSession,  private string $ip, private int $port, protected bool $authRequired){}
 
 	/**
 	 * Returns an object containing self-proclaimed information about the connecting player.
@@ -74,6 +65,15 @@ class PlayerPreLoginEvent extends Event implements Cancellable{
 	 */
 	public function getPlayerInfo() : PlayerInfo{
 		return $this->playerInfo;
+	}
+
+	public function getDeviceId() : string{
+		return $this->playerInfo->getDeviceId();
+	}
+
+	public function getNetworkSession(): NetworkSession
+	{
+		return $this->networkSession;
 	}
 
 	public function getIp() : string{

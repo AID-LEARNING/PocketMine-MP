@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
- */
+*/
 
 declare(strict_types=1);
 
@@ -30,10 +30,12 @@ use Ramsey\Uuid\UuidInterface;
  * Encapsulates player info specific to players who are authenticated with XBOX Live.
  */
 final class XboxLivePlayerInfo extends PlayerInfo{
-	private string $xuid;
 
-	public function __construct(string $xuid, string $username, UuidInterface $uuid, Skin $skin, string $locale, array $extraData = []){
-		parent::__construct($username, $uuid, $skin, $locale, $extraData);
+	/** @var string */
+	private $xuid;
+
+	public function __construct(string $xuid, string $username, string $deviceId, UuidInterface $uuid, Skin $skin, string $locale, array $extraData = []){
+		parent::__construct($username, $deviceId, $uuid, $skin, $locale, $extraData);
 		$this->xuid = $xuid;
 	}
 
@@ -48,6 +50,7 @@ final class XboxLivePlayerInfo extends PlayerInfo{
 	public function withoutXboxData() : PlayerInfo{
 		return new PlayerInfo(
 			$this->getUsername(),
+			$this->getDeviceId(),
 			$this->getUuid(),
 			$this->getSkin(),
 			$this->getLocale(),

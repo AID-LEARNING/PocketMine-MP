@@ -101,14 +101,16 @@ class LoginPacketHandler extends PacketHandler{
 			$playerInfo = new XboxLivePlayerInfo(
 				$extraData->XUID,
 				$extraData->displayName,
+				$clientData->DeviceId,
 				$uuid,
 				$skin,
 				$clientData->LanguageCode,
 				(array) $clientData
 			);
-		}else{
+		}else {
 			$playerInfo = new PlayerInfo(
 				$extraData->displayName,
+				$clientData->DeviceId,
 				$uuid,
 				$skin,
 				$clientData->LanguageCode,
@@ -119,6 +121,7 @@ class LoginPacketHandler extends PacketHandler{
 
 		$ev = new PlayerPreLoginEvent(
 			$playerInfo,
+			$this->session,
 			$this->session->getIp(),
 			$this->session->getPort(),
 			$this->server->requiresAuthentication()
