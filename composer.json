@@ -35,6 +35,7 @@
       "adhocore/json-comment": "^1.1",
       "fgrosse/phpasn1": "^2.3",
       "mongodb/mongodb": ">=1.13.1",
+      "opis/closure": ">=3.6.3",
       "netresearch/jsonmapper": "^4.0",
       "pocketmine/bedrock-data": "~1.11.0+bedrock-1.19.30",
       "pocketmine/bedrock-protocol": "~13.0.0+bedrock-1.19.30",
