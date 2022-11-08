@@ -515,6 +515,7 @@ class Config{
 	 *
 	 * @phpstan-param array<string, mixed> $default
 	 * @phpstan-param array<string, mixed> $data
+	 * @phpstan-param-out array<string, mixed> $data
 	 */
 	private function fillDefaults(array $default, &$data) : int{
 		$changed = 0;
