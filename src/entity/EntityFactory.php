@@ -225,10 +225,12 @@ final class EntityFactory{
 	 * @throws SavedDataLoadingException
 	 * @internal
 	 */
-	public function createFromData(World $world, CompoundTag $nbt) : ?Entity{
+	public function createFromData(World $world, CompoundTag $nbt) : ?Entity{*
 		try{
 			$saveId = $nbt->getTag("identifier") ?? $nbt->getTag("id");
+
 			$func = null;
+
 			if($saveId instanceof StringTag){
 				$func = $this->creationFuncs[$saveId->getValue()] ?? null;
 			}elseif($saveId instanceof IntTag){ //legacy MCPE format

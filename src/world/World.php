@@ -36,6 +36,7 @@ use pocketmine\block\tile\TileFactory;
 use pocketmine\block\UnknownBlock;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\data\bedrock\BiomeIds;
+use pocketmine\data\bedrock\EntityLegacyIds as LegacyIds;
 use pocketmine\data\SavedDataLoadingException;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntityFactory;
@@ -2610,8 +2611,12 @@ class World implements ChunkManager{
 				try{
 					$entity = $entityFactory->createFromData($this, $nbt);
 				}catch(SavedDataLoadingException $e){
-					$logger->error("Bad entity data at list position $k: " . $e->getMessage());
-					$logger->logException($e);
+					$saveId = $nbt->getTag("identifier") ?? $nbt->getTag("id");
+
+					if(!in_array($saveId?->getValue(), ['FallingSand', 'minecraft:falling_block', LegacyIds::FALLING_BLOCK])){
+						$logger->error("Bad entity data at list position $k: " . $e->getMessage());
+						$logger->logException($e);
+					}
 					continue;
 				}
 				if($entity === null){
