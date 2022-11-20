@@ -225,7 +225,7 @@ final class EntityFactory{
 	 * @throws SavedDataLoadingException
 	 * @internal
 	 */
-	public function createFromData(World $world, CompoundTag $nbt) : ?Entity{*
+	public function createFromData(World $world, CompoundTag $nbt) : ?Entity{
 		try{
 			$saveId = $nbt->getTag("identifier") ?? $nbt->getTag("id");
 
