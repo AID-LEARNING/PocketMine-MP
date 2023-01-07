@@ -132,6 +132,7 @@ use function get_class;
 use function in_array;
 use function json_encode;
 use function ksort;
+use function min;
 use function strcasecmp;
 use function strlen;
 use function strtolower;
@@ -142,6 +143,19 @@ use const JSON_THROW_ON_ERROR;
 use const SORT_NUMERIC;
 
 class NetworkSession{
+	private const INCOMING_PACKET_BATCH_PER_TICK = 2; //we should normally see only 1 per tick - 2 allows recovery of the budget after a lag spike
+	private const INCOMING_PACKET_BATCH_MAX_BUDGET = 100; //enough to account for a 5-second lag spike
+
+	/**
+	 * At most this many more packets can be received. If this reaches zero, any additional packets received will cause
+	 * the player to be kicked from the server.
+	 * This number is increased every tick up to a maximum limit.
+	 *
+	 * @see self::INCOMING_PACKET_BATCH_PER_TICK
+	 * @see self::INCOMING_PACKET_BATCH_MAX_BUDGET
+	 */
+	private int $incomingPacketBatchBudget = self::INCOMING_PACKET_BATCH_MAX_BUDGET;
+
 	private \PrefixedLogger $logger;
 	private ?Player $player = null;
 	private ?PlayerInfo $info = null;
@@ -229,6 +243,7 @@ class NetworkSession{
 				$this->info = $info;
 				$this->logger->info("Player: " . TextFormat::AQUA . $info->getUsername() . TextFormat::RESET);
 				$this->logger->setPrefix($this->getLogPrefix());
+				$this->manager->markLoginReceived($this);
 			},
 			function(bool $isAuthenticated, bool $authRequired, ?string $error, ?string $clientPubKey) : void{
 				$this->setAuthenticationStatus($isAuthenticated, $authRequired, $error, $clientPubKey);
@@ -338,6 +353,11 @@ class NetworkSession{
 			return;
 		}
 
+		if($this->incomingPacketBatchBudget <= 0){
+			throw new PacketHandlingException("Receiving packets too fast");
+		}
+		$this->incomingPacketBatchBudget--;
+
 		if($this->cipher !== null){
 			Timings::$playerNetworkReceiveDecrypt->startTiming();
 			try{
@@ -365,7 +385,7 @@ class NetworkSession{
 		}
 
 		try{
-			foreach((new PacketBatch($decompressed))->getPackets($this->packetPool, $this->packetSerializerContext, 500) as [$packet, $buffer]){
+			foreach((new PacketBatch($decompressed))->getPackets($this->packetPool, $this->packetSerializerContext, 1300) as [$packet, $buffer]){
 				if($packet === null){
 					$this->logger->debug("Unknown packet: " . base64_encode($buffer));
 					throw new PacketHandlingException("Unknown packet received");
@@ -1128,5 +1148,6 @@ class NetworkSession{
 		}
 
 		$this->flushSendBuffer();
+		$this->incomingPacketBatchBudget = min($this->incomingPacketBatchBudget + self::INCOMING_PACKET_BATCH_PER_TICK, self::INCOMING_PACKET_BATCH_MAX_BUDGET);
 	}
 }
